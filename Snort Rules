@@ -1,0 +1,17 @@
+# ======================== Snort Rules =========================
+
+#alert icmp any any -> $HOME_NET any (msg:"ICMP Ping Detected"; sid:100001; r    ev:1;)
+
+# alert tcp any any -> $HOME_NET 22 (msg:"SSH Authentication Attempt"; sid:100    002; rev:1;)
+
+# alert tcp any any -> $HOME_NET 21 (msg:"FTP Authentication Attempt On MS2";     sid:100003; rev:1;)
+
+# alert tcp any any -> $HOME_NET 445 (msg:"OS-WINDOWS Microsoft Windows SMB re    mote code execution attempt"; flow:to_server,established; content:"|FF|SMB3|    00 00 00 00|"; depth:9; offset:4; byte_extract:2,26,TotalDataCount,relative,    little; byte_test:2,>,TotalDataCount,20,relative,little; metadata:policy bal    anced-ips drop, policy connectivity-ips drop, policy max-detect-ips drop, po    licy security-ips drop, ruleset community, service netbios-ssn; reference:cv    e,2017-0144; reference:cve,2017-0146; reference:url,blog.talosintelligence.c    om/2017/05/wannacry.html; reference:url,isc.sans.edu/forums/diary/ETERNALBLU    E+Possible+Window+SMB+Buffer+Overflow+0Day/22304/; reference:url,technet.mic    rosoft.com/en-us/security/bulletin/MS17-010; classtype:attempted-admin; sid:    41978; rev:5;)
+ 
+# alert tcp $HOME_NET 2589 -> $EXTERNAL_NET any (msg:"MALWARE-BACKDOOR - Dagger_1.4.0"; flow:to_client,established; content:"2|00 00 00 06 00 00 00|Drives|24 00|"; depth:16; metadata:ruleset community; classtype:misc-activity; sid:105; rev:14;)
+
+# alert icmp 3.3.3.3/32 any -> $EXTERNAL_NET any (msg:"PROTOCOL-ICMP Stacheldraht server spoof"; icmp_id:666; itype:0; metadata:ruleset community; reference:cve,2000-0138; classtype:attempted-dos; sid:224; rev:10;)
+
+# alert ip $EXTERNAL_NET any -> $HOME_NET any (msg:"OS-WINDOWS Microsoft WIndows IGMP dos attack"; fragbits:M+; ip_proto:2; metadata:ruleset community; reference:bugtraq,514; reference:cve,1999-0918; reference:url,technet.microsoft.com/en-us/security/bulletin/MS99-034; classtype:attempted-dos; sid:272; rev:16;)
+
+# alert icmp $EXTERNAL_NET any -> $HOME_NET any (msg:"PROTOCOL-ICMP ath"; itype:8; content:"+++ath"; fast_pattern:only; metadata:ruleset community; reference:cve,1999-1228; classtype:attempted-dos; sid:274; rev:13;)
